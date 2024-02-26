@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /**
- * 仮想DOMの要素を表す構造体
+ * 仮想DOMの要素を表す列挙型
  */
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum ElementType {
@@ -15,7 +15,7 @@ pub enum ElementType {
  * 仮想DOMのノードを表す構造体
  */
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub struct VirtualNode {
+pub struct VNode {
     pub element_type: ElementType,
 }
 
@@ -24,8 +24,8 @@ pub struct VirtualNode {
  */
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Diff {
-    AddNode(VirtualNode),
-    RemoveNode(VirtualNode),
+    AddNode(VNode),
+    RemoveNode(VNode),
 }
 
 impl PartialEq for Diff {
@@ -50,7 +50,7 @@ pub struct AppResponse {
 /**
  * 仮想DOMの更新の差分を取得する関数
  */
-pub fn update_dom(old: &VirtualNode, new: &VirtualNode) -> AppResponse {
+pub fn update_dom(old: &VNode, new: &VNode) -> AppResponse {
     let mut diff = Vec::new();
 
     let removed_nodes = find_removed_nodes(old, new);
@@ -80,7 +80,7 @@ pub fn update_dom(old: &VirtualNode, new: &VirtualNode) -> AppResponse {
 /**
 * 仮想DOMに追加されたノードを取得する関数
 */
-fn find_added_nodes(old: &VirtualNode, new: &VirtualNode) -> Vec<VirtualNode> {
+fn find_added_nodes(old: &VNode, new: &VNode) -> Vec<VNode> {
     let mut added_nodes = Vec::new();
     find_added_nodes_recursive(&old.element_type, &new.element_type, &mut added_nodes);
     added_nodes
@@ -89,14 +89,10 @@ fn find_added_nodes(old: &VirtualNode, new: &VirtualNode) -> Vec<VirtualNode> {
 /**
  * 仮想DOMに追加されたノードを再帰的に取得する関数
 */
-fn find_added_nodes_recursive(
-    old: &ElementType,
-    new: &ElementType,
-    added_nodes: &mut Vec<VirtualNode>,
-) {
+fn find_added_nodes_recursive(old: &ElementType, new: &ElementType, added_nodes: &mut Vec<VNode>) {
     if old != new {
         if !new.is_empty_text_node() {
-            added_nodes.push(VirtualNode {
+            added_nodes.push(VNode {
                 element_type: new.clone(),
             });
         }
@@ -112,7 +108,7 @@ fn find_added_nodes_recursive(
 /**
  * 仮想DOMの削除されたノードを取得する関数
  */
-fn find_removed_nodes(old: &VirtualNode, new: &VirtualNode) -> Vec<VirtualNode> {
+fn find_removed_nodes(old: &VNode, new: &VNode) -> Vec<VNode> {
     let mut removed_nodes = Vec::new();
     find_removed_nodes_recursive(&old.element_type, &new.element_type, &mut removed_nodes);
     removed_nodes
@@ -124,11 +120,11 @@ fn find_removed_nodes(old: &VirtualNode, new: &VirtualNode) -> Vec<VirtualNode> 
 fn find_removed_nodes_recursive(
     old: &ElementType,
     new: &ElementType,
-    removed_nodes: &mut Vec<VirtualNode>,
+    removed_nodes: &mut Vec<VNode>,
 ) {
     if old != new {
         if !old.is_empty_text_node() {
-            removed_nodes.push(VirtualNode {
+            removed_nodes.push(VNode {
                 element_type: old.clone(),
             });
         }
@@ -182,7 +178,7 @@ mod tests {
 
     #[test]
     fn test_update_dom() {
-        let old_dom = VirtualNode {
+        let old_dom = VNode {
             element_type: ElementType::Element(
                 "div".to_string(),
                 HashMap::new(),
@@ -190,7 +186,7 @@ mod tests {
             ),
         };
 
-        let new_dom = VirtualNode {
+        let new_dom = VNode {
             element_type: ElementType::Element(
                 "div".to_string(),
                 HashMap::new(),
@@ -206,14 +202,14 @@ mod tests {
         };
 
         let expected_diff = vec![
-            Diff::RemoveNode(VirtualNode {
+            Diff::RemoveNode(VNode {
                 element_type: ElementType::Element(
                     "div".to_string(),
                     HashMap::new(),
                     vec![ElementType::Text("Hello".to_string())],
                 ),
             }),
-            Diff::AddNode(VirtualNode {
+            Diff::AddNode(VNode {
                 element_type: ElementType::Element(
                     "div".to_string(),
                     HashMap::new(),

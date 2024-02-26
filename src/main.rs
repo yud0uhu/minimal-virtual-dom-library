@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use warp::Filter;
 mod self_virtual_dom;
-use self_virtual_dom::{update_dom, virtual_dom_to_html, AppResponse, ElementType, VirtualNode};
+use self_virtual_dom::{update_dom, virtual_dom_to_html, AppResponse, ElementType, VNode};
 
 #[derive(Deserialize)]
 struct Input {
@@ -34,7 +34,7 @@ async fn main() {
 }
 
 pub fn run_app(dynamic_input: &str) -> AppResponse {
-    let old_dom = VirtualNode {
+    let old_dom = VNode {
         element_type: ElementType::Element(
             "div".to_string(),
             HashMap::new(),
@@ -52,7 +52,7 @@ pub fn run_app(dynamic_input: &str) -> AppResponse {
         ),
     };
 
-    let new_dom = VirtualNode {
+    let new_dom = VNode {
         element_type: ElementType::Element(
             "div".to_string(),
             HashMap::new(),
@@ -67,7 +67,7 @@ pub fn run_app(dynamic_input: &str) -> AppResponse {
 }
 
 pub fn update_input(input: String) -> AppResponse {
-    let old_dom = VirtualNode {
+    let old_dom = VNode {
         element_type: ElementType::Element(
             "div".to_string(),
             HashMap::new(),
@@ -75,7 +75,7 @@ pub fn update_input(input: String) -> AppResponse {
         ),
     };
 
-    let new_dom = VirtualNode {
+    let new_dom = VNode {
         element_type: ElementType::Element(
             "div".to_string(),
             HashMap::new(),
