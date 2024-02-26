@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual DOM Example</title>
+  </head>
+  <body>
+    <script type="module">
+      import init from "./pkg/self_virtual_dom.js";
+
+      async function run() {
+        // Initialize the virtual DOM library
+        await init();
+
+        // Call the run_app function from your virtual DOM library
+        self_virtual_dom.run_app();
+
+        // Add event listener for input changes
+        const inputField = document.getElementById("myInput");
+        inputField.addEventListener("input", handleInputChange);
+      }
+
+      function handleInputChange(event) {
+        // Log the virtual DOM updates when the input value changes
+        const newValue = event.target.value;
+        console.log(`Input value changed to: ${newValue}`);
+
+        // You can perform virtual DOM updates here if needed
+        // For now, let's just log the virtual DOM diff
+        const diff =
+          self_virtual_dom.update_dom(/* provide old and new virtual nodes */);
+        console.log("Virtual DOM Diff:", diff);
+      }
+
+      run();
+    </script>
+  </body>
+</html>

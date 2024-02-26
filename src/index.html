@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Self Virtual DOM DEMO</title>
+  </head>
+  <body>
+    <div id="app">
+      <div><h1>Live Demo</h1></div>
+      <input type="text" id="myInput" oninput="onInputChange()" />
+      <input type="checkbox" id="removeCheckbox" />
+      <label for="removeCheckbox">Remove Preview</label>
+      <div><h1>Preview</h1></div>
+      <div id="previewNode"></div>
+    </div>
+    <script>
+      async function fetchAndUpdateDOM() {
+        const response = await fetch("/run_app");
+        const { html, diff } = await response.json();
+
+        const appDiv = document.getElementById("app");
+        const myInput = document.getElementById("myInput");
+        const removeCheckbox = document.getElementById("removeCheckbox");
+        const previewNode = document.getElementById("previewNode");
+
+        if (previewNode) {
+          const shouldRemoveNode = removeCheckbox.checked;
+
+          const previewNodeContent = shouldRemoveNode ? "" : myInput.value;
+
+          previewNode.textContent = previewNodeContent;
+        }
+      }
+
+      function onInputChange() {
+        const inputValue = document.getElementById("myInput").value;
+        fetch("/update_input", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: inputValue }),
+        })
+          .then((response) => response.json())
+          .then(({ html, diff }) => {
+            fetchAndUpdateDOM();
+          });
+      }
+
+      fetchAndUpdateDOM();
+
+      removeCheckbox.addEventListener("change", fetchAndUpdateDOM);
+    </script>
+  </body>
+</html>
