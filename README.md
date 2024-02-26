@@ -4,6 +4,6 @@
 
 ## Demo
 
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/YmGVfo8"  ><a href="//imgur.com/a/YmGVfo8"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+https://github.com/yud0uhu/minimal-virtual-dom-library/assets/60646787/2abf2867-ed7d-4fa5-9003-59be9f125543
 
 ## Usage
